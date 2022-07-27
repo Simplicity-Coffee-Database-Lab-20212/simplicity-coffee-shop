@@ -7,50 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 const { Title } = Typography;
 
 const Employee = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      employeeid: 'EMP2019',
-      name: 'Trần Phúc Thành',
-      phonenumber: '0918322965',
-      gender: 'Male',
-      position: 'Sale',
-    },
-    {
-      employeeid: 'EMP2018',
-      name: 'Trần Phúc Thành',
-      phonenumber: '0918322965',
-      gender: 'Male',
-      position: 'Sale',
-    },
-    {
-      employeeid: 'EMP2017',
-      name: 'Trần Phúc Thành',
-      phonenumber: '0918322965',
-      gender: 'Male',
-      position: 'Sale',
-    },
-    {
-      employeeid: 'EMP2016',
-      name: 'Trần Phúc Thành',
-      phonenumber: '0918322965',
-      gender: 'Male',
-      position: 'Sale',
-    },
-    {
-      employeeid: 'EMP2015',
-      name: 'Trần Phúc Thành',
-      phonenumber: '0918322965',
-      gender: 'Male',
-      position: 'Sale',
-    },
-    {
-      employeeid: 'EMP2015',
-      name: 'Trần Phúc Thành',
-      phonenumber: '0918322965',
-      gender: 'Male',
-      position: 'Sale',
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
 
   const onDelete = (record) => {
     setDataSource((pre) => {
@@ -137,6 +94,33 @@ const Employee = () => {
     console.log('Failed:', errorInfo);
   };
 
+  const getData = async () => {
+    const newData = await fetch('/select-all-employees', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    console.log(newData);
+
+    newData.map((item) => {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            employeeid: item.EmployeeID,
+            name: item.Name,
+            phonenumber: item.PhoneNumber,
+            gender: item.Gender,
+            position: item.Position,
+          },
+        ];
+      });
+    });
+  };
+
   return (
     <div>
       <Row className={classes.top}>
@@ -220,6 +204,9 @@ const Employee = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        Get Data
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );

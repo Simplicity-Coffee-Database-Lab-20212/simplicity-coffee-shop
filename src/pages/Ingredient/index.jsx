@@ -18,50 +18,7 @@ import moment from 'moment';
 const { Title } = Typography;
 
 const Ingredient = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      ingredientid: 'ING2019',
-      name: 'Pepper',
-      price: 12,
-      quantity: 2,
-      expire: `${moment().format('YYYY-MM-DD')}`,
-    },
-    {
-      ingredientid: 'ING2018',
-      name: 'Pepper',
-      price: 12,
-      quantity: 2,
-      expire: `${moment().format('YYYY-MM-DD')}`,
-    },
-    {
-      ingredientid: 'ING2017',
-      name: 'Pepper',
-      price: 12,
-      quantity: 2,
-      expire: `${moment().format('YYYY-MM-DD')}`,
-    },
-    {
-      ingredientid: 'ING2016',
-      name: 'Pepper',
-      price: 12,
-      quantity: 2,
-      expire: `${moment().format('YYYY-MM-DD')}`,
-    },
-    {
-      ingredientid: 'ING2015',
-      name: 'Pepper',
-      price: 12,
-      quantity: 2,
-      expire: `${moment().format('YYYY-MM-DD')}`,
-    },
-    {
-      ingredientid: 'ING2014',
-      name: 'Pepper',
-      price: 12,
-      quantity: 2,
-      expire: `${new Date()}`,
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
 
   const onDelete = (record) => {
     setDataSource((pre) => {
@@ -149,6 +106,33 @@ const Ingredient = () => {
     console.log('Failed:', errorInfo);
   };
 
+  const getData = async () => {
+    const newData = await fetch('/select-all-ingredients', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    console.log(newData);
+
+    newData.map((item) => {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            ingredientid: item.IngredientID,
+            name: item.Name,
+            price: item.Price,
+            quantity: item.QuantityInStock,
+            expire: item.ExpireDate,
+          },
+        ];
+      });
+    });
+  };
+
   return (
     <div>
       <Row className={classes.top}>
@@ -230,6 +214,9 @@ const Ingredient = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        Get Data
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );
