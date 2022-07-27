@@ -7,32 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 const { Title } = Typography;
 
 const Product = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      productid: 'PRO2019',
-      name: 'Bubble Tea',
-      type: 'Beverage',
-      price: 12,
-    },
-    {
-      productid: 'PRO2018',
-      name: 'Bubble Tea',
-      type: 'Beverage',
-      price: 12,
-    },
-    {
-      productid: 'PRO2017',
-      name: 'Bubble Tea',
-      type: 'Beverage',
-      price: 12,
-    },
-    {
-      productid: 'PRO2016',
-      name: 'Bubble Tea',
-      type: 'Beverage',
-      price: 12,
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
 
   const onDelete = (record) => {
     setDataSource((pre) => {
@@ -111,6 +86,30 @@ const Product = () => {
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
+  };
+
+  const getData = async () => {
+    const newData = await fetch('/select-all-products', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    newData.map((item) => {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            productid: item.ProductID,
+            name: item.Name,
+            type: item.Type,
+            price: item.price,
+          },
+        ];
+      });
+    });
   };
 
   return (
@@ -192,6 +191,9 @@ const Product = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        Get Data
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );

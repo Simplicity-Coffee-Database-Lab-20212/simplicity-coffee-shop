@@ -6,6 +6,7 @@ const {
   selectAllProduct,
   selectAllIngredient,
   selectAllSupplier,
+  selectAllOrder,
 } = require('./src/services/dbOperations');
 
 const API_PORT = process.env.PORT || 5000;
@@ -18,6 +19,11 @@ app.use(cors());
 app.post('/select-all-customers', function (req, res) {
   console.log('Called all customers');
   selectAllCustomer(res);
+});
+
+app.post('/select-all-orders', function (req, res) {
+  console.log('Called all customers');
+  selectAllOrder(res);
 });
 
 app.post('/select-all-products', function (req, res) {

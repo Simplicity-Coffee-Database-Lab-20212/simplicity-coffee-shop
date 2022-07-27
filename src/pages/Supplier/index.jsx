@@ -7,38 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 const { Title } = Typography;
 
 const Supplier = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      supplierid: 'SUP2013',
-      name: 'Winmart',
-      phonenumber: '0198322965',
-      address: '108 Nguyễn Viết Xuân',
-    },
-    {
-      supplierid: 'SUP2014',
-      name: 'Winmart',
-      phonenumber: '0198322965',
-      address: '108 Nguyễn Viết Xuân',
-    },
-    {
-      supplierid: 'SUP2015',
-      name: 'Winmart',
-      phonenumber: '0198322965',
-      address: '108 Nguyễn Viết Xuân',
-    },
-    {
-      supplierid: 'SUP2016',
-      name: 'Winmart',
-      phonenumber: '0198322965',
-      address: '108 Nguyễn Viết Xuân',
-    },
-    {
-      supplierid: 'SUP2017',
-      name: 'Winmart',
-      phonenumber: '0198322965',
-      address: '108 Nguyễn Viết Xuân',
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
 
   const onDelete = (record) => {
     setDataSource((pre) => {
@@ -117,6 +86,30 @@ const Supplier = () => {
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
+  };
+
+  const getData = async () => {
+    const newData = await fetch('/select-all-suppliers', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    newData.map((item) => {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            supplierid: item.SupplierID,
+            name: item.Name,
+            phonenumber: item.PhoneNumber,
+            address: item.Address,
+          },
+        ];
+      });
+    });
   };
 
   return (
@@ -198,6 +191,9 @@ const Supplier = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        Get Data
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );

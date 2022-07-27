@@ -17,48 +17,7 @@ import { ToastContainer, toast } from 'react-toastify';
 const { Title } = Typography;
 
 const Order = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      orderid: 'ORD2013',
-      customerid: 'CUS2019',
-      employeeid: 'EMP2019',
-      date: `${new Date()}`,
-      payment: 'Cash',
-      totalprice: 20,
-    },
-    {
-      orderid: 'ORD2014',
-      customerid: 'CUS2019',
-      employeeid: 'EMP2019',
-      date: `${new Date()}`,
-      payment: 'Cash',
-      totalprice: 20,
-    },
-    {
-      orderid: 'ORD2015',
-      customerid: 'CUS2019',
-      employeeid: 'EMP2019',
-      date: `${new Date()}`,
-      payment: 'Cash',
-      totalprice: 20,
-    },
-    {
-      orderid: 'ORD2015',
-      customerid: 'CUS2019',
-      employeeid: 'EMP2019',
-      date: `${new Date()}`,
-      payment: 'Cash',
-      totalprice: 20,
-    },
-    {
-      orderid: 'ORD2017',
-      customerid: 'CUS2019',
-      employeeid: 'EMP2019',
-      date: `${new Date()}`,
-      payment: 'Cash',
-      totalprice: 20,
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
 
   const onDelete = (record) => {
     setDataSource((pre) => {
@@ -149,6 +108,33 @@ const Order = () => {
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
+  };
+
+  const getData = async () => {
+    const newData = await fetch('/select-all-orders', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+    console.log(newData);
+
+    newData.map((item) => {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            orderid: item.OrderingID,
+            customerid: item.CustomerID,
+            employeeid: item.EmployeeID,
+            date: item.DateOrdered,
+            payment: item.PaymentType,
+            totalprice: item.TotalPrice,
+          },
+        ];
+      });
+    });
   };
 
   return (
@@ -256,6 +242,9 @@ const Order = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        Get Data
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );
