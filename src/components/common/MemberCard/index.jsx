@@ -1,7 +1,8 @@
-import react from 'react';
+import React from 'react';
 import { Avatar } from 'antd';
 import classes from './styles.module.scss';
-export const MemberCard = ({ name, id, src, role }) => {
+
+const MemberCard = ({ name, id, src }) => {
   return (
     <div className={classes.cardwrapper}>
       <Avatar size={160} src={src} className={classes.avatar} />
@@ -12,3 +13,5 @@ export const MemberCard = ({ name, id, src, role }) => {
     </div>
   );
 };
+
+export default MemberCard;
