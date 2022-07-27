@@ -1,6 +1,6 @@
-import react from "react";
-import { Avatar } from "antd";
-import classes from "./styles.module.scss";
+import react from 'react';
+import { Avatar } from 'antd';
+import classes from './styles.module.scss';
 export const MemberCard = ({ name, id, src, role }) => {
   return (
     <div className={classes.cardwrapper}>

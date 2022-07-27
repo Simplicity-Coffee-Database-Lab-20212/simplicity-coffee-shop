@@ -1,11 +1,13 @@
 .cardwrapper {
   position: relative;
-  height: 400px;
+  // height: 400px;
+  margin-bottom: 100px;
   padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .card {
   position: absolute;
   top: 100px;
@@ -16,11 +18,19 @@
   border-radius: 5px;
   text-align: center;
 }
+
 .name {
   text-transform: uppercase;
   letter-spacing: 2px;
   font-weight: 700;
 }
+
 .avatar {
   z-index: 1;
+}
+
+@media (max-width: 600px) {
+  .card {
+    width: 250px;
+  }
 }
