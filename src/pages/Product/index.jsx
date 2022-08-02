@@ -105,7 +105,7 @@ const Product = () => {
             productid: item.ProductID,
             name: item.Name,
             type: item.Type,
-            price: item.price,
+            price: item.Price,
           },
         ];
       });
