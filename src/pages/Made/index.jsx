@@ -8,6 +8,7 @@ const { Title } = Typography;
 
 const Made = () => {
   const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
   const onDelete = (record) => {
     setDataSource((pre) => {
@@ -89,6 +90,7 @@ const Made = () => {
   };
 
   const getData = async () => {
+    setDataSource([]);
     const newData = await fetch('/select-all-made', {
       method: 'POST',
       headers: {
@@ -97,19 +99,22 @@ const Made = () => {
       },
     }).then((res) => res.json());
 
-    newData.map((item) => {
-      setDataSource((prev) => {
-        return [
-          ...prev,
-          {
-            madeid: item.MadeID,
-            productid: item.ProductID,
-            ingredientid: item.IngredientID,
-            quantity: item.Quantity,
-          },
-        ];
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              madeid: item.MadeID,
+              productid: item.ProductID,
+              ingredientid: item.IngredientID,
+              quantity: item.Quantity,
+            },
+          ];
+        });
       });
-    });
+    }
   };
 
   return (
@@ -210,7 +215,7 @@ const Made = () => {
         dataSource={dataSource}
       ></Table>
       <Button onClick={getData} style={{ marginTop: '20px' }}>
-        Get Data
+        {isFetchData ? 'Refresh' : 'Get Data'}
       </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>

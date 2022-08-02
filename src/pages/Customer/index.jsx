@@ -8,6 +8,7 @@ const { Title } = Typography;
 
 const Customer = () => {
   const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
   const onDelete = (record) => {
     setDataSource((pre) => {
@@ -89,6 +90,7 @@ const Customer = () => {
   };
 
   const getData = async () => {
+    setDataSource([]);
     const newData = await fetch('/select-all-customers', {
       method: 'POST',
       headers: {
@@ -97,19 +99,22 @@ const Customer = () => {
       },
     }).then((res) => res.json());
 
-    newData.map((item) => {
-      setDataSource((prev) => {
-        return [
-          ...prev,
-          {
-            customerid: item.CustomerID,
-            name: item.Name,
-            phonenumber: item.PhoneNumber,
-            gender: item.Gender,
-          },
-        ];
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              customerid: item.CustomerID,
+              name: item.Name,
+              phonenumber: item.PhoneNumber,
+              gender: item.Gender,
+            },
+          ];
+        });
       });
-    });
+    }
   };
 
   return (
@@ -192,7 +197,7 @@ const Customer = () => {
         dataSource={dataSource}
       ></Table>
       <Button onClick={getData} style={{ marginTop: '20px' }}>
-        Get Data
+        {isFetchData ? 'Refresh' : 'Get Data'}
       </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
