@@ -13,6 +13,7 @@ import {
 import React, { useState } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
+import { formatNewDate, formatReceivedSqlDate } from '../../utils/formatDate';
 
 const { Title } = Typography;
 
@@ -31,8 +32,6 @@ const Supply = () => {
         id: record.supplyid,
       }),
     }).then((res) => res.json());
-
-    console.log(newData);
 
     setDataSource((pre) => {
       return pre.filter((item) => item.supplyid !== record.supplyid);
@@ -105,7 +104,7 @@ const Supply = () => {
           supplyid: values.supplyid,
           supplierid: values.supplierid,
           ingredientid: values.ingredientid,
-          date: values.date,
+          date: formatNewDate(values.date),
           quantity: values.quantity,
         },
       ];
@@ -139,7 +138,7 @@ const Supply = () => {
               supplyid: item.SupplyID,
               supplierid: item.SupplierID,
               ingredientid: item.IngredientID,
-              date: item.SupplyDate,
+              date: formatReceivedSqlDate(item.SupplyDate),
               quantity: item.Quantity,
             },
           ];
