@@ -17,43 +17,7 @@ import { ToastContainer, toast } from 'react-toastify';
 const { Title } = Typography;
 
 const Supply = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      supplyid: 'BUY1',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-    {
-      supplyid: 'BUY2',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-    {
-      supplyid: 'BUY3',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-    {
-      supplyid: 'BUY4',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-    {
-      supplyid: 'BUY5',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
 
   const onDelete = (record) => {
     setDataSource((pre) => {
@@ -138,6 +102,31 @@ const Supply = () => {
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
+  };
+
+  const getData = async () => {
+    const newData = await fetch('/select-all-supplies', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    newData.map((item) => {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            supplyid: item.SupplyID,
+            supplierid: item.SupplierID,
+            ingredientid: item.IngredientID,
+            date: item.SupplyDate,
+            quantity: item.Quantity,
+          },
+        ];
+      });
+    });
   };
 
   return (
@@ -241,6 +230,9 @@ const Supply = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        Get Data
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );

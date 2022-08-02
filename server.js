@@ -7,6 +7,9 @@ const {
   selectAllIngredient,
   selectAllSupplier,
   selectAllOrder,
+  selectAllSupply,
+  selectAllMade,
+  selectAllConsist,
 } = require('./src/services/dbOperations');
 
 const API_PORT = process.env.PORT || 5000;
@@ -44,6 +47,21 @@ app.post('/select-all-employees', function (req, res) {
 app.post('/select-all-suppliers', function (req, res) {
   console.log('Called all suppliers');
   selectAllSupplier(res);
+});
+
+app.post('/select-all-supplies', function (req, res) {
+  console.log('Called all supplies');
+  selectAllSupply(res);
+});
+
+app.post('/select-all-made', function (req, res) {
+  console.log('Called all made');
+  selectAllMade(res);
+});
+
+app.post('/select-all-consist', function (req, res) {
+  console.log('Called all consist');
+  selectAllConsist(res);
 });
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));

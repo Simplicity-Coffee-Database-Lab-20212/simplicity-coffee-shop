@@ -6,39 +6,8 @@ import { ToastContainer, toast } from 'react-toastify';
 
 const { Title } = Typography;
 
-const Made = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      consistid: 'CON2',
-      orderid: 'ORD2019',
-      productid: 'PRO2019',
-      quantity: 3,
-    },
-    {
-      consistid: 'CON92',
-      orderid: 'ORD2019',
-      productid: 'PRO2019',
-      quantity: 3,
-    },
-    {
-      consistid: 'CON62',
-      orderid: 'ORD2019',
-      productid: 'PRO2019',
-      quantity: 3,
-    },
-    {
-      consistid: 'CON24',
-      orderid: 'ORD2019',
-      productid: 'PRO2019',
-      quantity: 3,
-    },
-    {
-      consistid: 'CON22',
-      orderid: 'ORD2019',
-      productid: 'PRO2019',
-      quantity: 3,
-    },
-  ]);
+const Consist = () => {
+  const [dataSource, setDataSource] = useState([]);
 
   const onDelete = (record) => {
     setDataSource((pre) => {
@@ -119,11 +88,35 @@ const Made = () => {
     console.log('Failed:', errorInfo);
   };
 
+  const getData = async () => {
+    const newData = await fetch('/select-all-consist', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    newData.map((item) => {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            consistid: item.ConsistID,
+            orderid: item.OrderingID,
+            productid: item.ProductID,
+            quantity: item.Quantity,
+          },
+        ];
+      });
+    });
+  };
+
   return (
     <div>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
-          <Title level={3}>Made</Title>
+          <Title level={3}>Consist</Title>
         </Col>
         <Col xs={24} md={8} offset={8} className={classes.add}>
           <Button icon={<PlusOutlined />} onClick={showModal}>
@@ -216,9 +209,12 @@ const Made = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        Get Data
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );
 };
 
-export default Made;
+export default Consist;

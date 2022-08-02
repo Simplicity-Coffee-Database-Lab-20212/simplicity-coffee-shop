@@ -5,7 +5,11 @@ const {
   selectAllOrderQuery,
   selectAllProductQuery,
   selectAllSupplierQuery,
+  selectAllSupplyQuery,
+  selectAllMadeQuery,
+  selectAllConsistQuery,
 } = require('../../src/constants/query');
+
 const config = require('./dbConfig');
 
 const selectAllCustomer = (res) => {
@@ -80,6 +84,42 @@ const selectAllProduct = (res) => {
   });
 };
 
+const selectAllSupply = (res) => {
+  config.connect((error) => {
+    if (error) throw error;
+    console.log('Successful!');
+    config.query(selectAllSupplyQuery, (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    });
+  });
+};
+
+const selectAllMade = (res) => {
+  config.connect((error) => {
+    if (error) throw error;
+    console.log('Successful!');
+    config.query(selectAllMadeQuery, (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    });
+  });
+};
+
+const selectAllConsist = (res) => {
+  config.connect((error) => {
+    if (error) throw error;
+    console.log('Successful!');
+    config.query(selectAllConsistQuery, (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    });
+  });
+};
+
 module.exports = {
   selectAllCustomer,
   selectAllSupplier,
@@ -87,4 +127,7 @@ module.exports = {
   selectAllIngredient,
   selectAllOrder,
   selectAllProduct,
+  selectAllSupply,
+  selectAllMade,
+  selectAllConsist,
 };
