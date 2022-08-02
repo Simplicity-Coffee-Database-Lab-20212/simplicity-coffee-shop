@@ -34,6 +34,10 @@ const Ingredient = () => {
 
     console.log(newData);
 
+    setDataSource((pre) => {
+      return pre.filter((item) => item.ingredientid !== record.ingredientid);
+    });
+
     toast.success(`${record.ingredientid} deleted!`);
   };
 
