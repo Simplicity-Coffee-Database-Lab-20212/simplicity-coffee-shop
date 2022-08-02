@@ -82,21 +82,34 @@ const Consist = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          consistid: values.consistid,
-          orderid: values.orderid,
-          productid: values.productid,
-          quantity: values.quantity,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('New Order Recipe Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-consist', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            consistid: values.consistid,
+            orderid: values.orderid,
+            productid: values.productid,
+            quantity: values.quantity,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('New Order Recipe Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {

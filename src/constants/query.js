@@ -25,7 +25,7 @@ const insertEmployeeQuery = `INSERT INTO Employee VALUES `;
 const insertSupplierQuery = `INSERT INTO Supplier VALUES `;
 const insertConsistQuery = `INSERT INTO Consist VALUES `;
 const insertMadeQuery = `INSERT INTO Made VALUES `;
-const insertOrderQuery = `INSERT INTO Order VALUES `;
+const insertOrderQuery = `INSERT INTO Ordering VALUES `;
 const insertSupplyQuery = `INSERT INTO Supply VALUES `;
 
 module.exports = {

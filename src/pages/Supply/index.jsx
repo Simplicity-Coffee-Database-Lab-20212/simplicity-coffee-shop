@@ -98,22 +98,35 @@ const Supply = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          supplyid: values.supplyid,
-          supplierid: values.supplierid,
-          ingredientid: values.ingredientid,
-          date: formatNewDate(values.date),
-          quantity: values.quantity,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('New Supply Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-supply', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            supplyid: values.supplyid,
+            supplierid: values.supplierid,
+            ingredientid: values.ingredientid,
+            date: formatNewDate(values.date),
+            quantity: values.quantity,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('New Supply Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {

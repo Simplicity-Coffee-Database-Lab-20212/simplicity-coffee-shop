@@ -82,21 +82,34 @@ const Made = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          madeid: values.madeid,
-          productid: values.productid,
-          ingredientid: values.ingredientid,
-          quantity: values.quantity,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('New Recipe Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-made', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            madeid: values.madeid,
+            productid: values.productid,
+            ingredientid: values.ingredientid,
+            quantity: values.quantity,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('New Recipe Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {

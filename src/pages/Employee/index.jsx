@@ -87,22 +87,35 @@ const Employee = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          employeeid: values.employeeid,
-          name: values.name,
-          phonenumber: values.phonenumber,
-          gender: values.gender,
-          position: values.position,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Employee Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-employee', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            employeeid: values.employeeid,
+            name: values.name,
+            phonenumber: values.phonenumber,
+            gender: values.gender,
+            position: values.position,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Employee Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {

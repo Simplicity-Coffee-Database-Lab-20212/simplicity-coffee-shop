@@ -101,23 +101,36 @@ const Order = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          orderid: values.orderid,
-          customerid: values.customerid,
-          employeeid: values.employeeid,
-          date: formatNewDate(values.date),
-          payment: values.payment,
-          totalprice: values.totalprice,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Order Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-order', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            orderid: values.orderid,
+            customerid: values.customerid,
+            employeeid: values.employeeid,
+            date: formatNewDate(values.date),
+            payment: values.payment,
+            totalprice: values.totalprice,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Order Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {

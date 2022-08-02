@@ -82,21 +82,34 @@ const Supplier = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          supplierid: values.supplierid,
-          name: values.name,
-          phonenumber: values.phonenumber,
-          address: values.address,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Supplier Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-supplier', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            supplierid: values.supplierid,
+            name: values.name,
+            phonenumber: values.phonenumber,
+            address: values.address,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Supplier Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {

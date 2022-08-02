@@ -13,6 +13,7 @@ import {
 import React, { useState } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
+import { formatNewDate, formatReceivedSqlDate } from '../../utils/formatDate';
 
 const { Title } = Typography;
 
@@ -97,23 +98,35 @@ const Ingredient = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    console.log(values.expire);
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          ingredientid: values.ingredientid,
-          name: values.name,
-          price: values.price,
-          quantity: values.quantity,
-          expire: values.expire.toString(),
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Ingredient Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-ingredient', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            ingredientid: values.ingredientid,
+            name: values.name,
+            price: values.price,
+            quantity: values.quantity,
+            expire: formatNewDate(values.expire),
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Ingredient Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -142,7 +155,7 @@ const Ingredient = () => {
               name: item.Name,
               price: item.Price,
               quantity: item.QuantityInStock,
-              expire: item.ExpireDate,
+              expire: formatReceivedSqlDate(item.ExpireDate),
             },
           ];
         });

@@ -82,21 +82,34 @@ const Customer = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          customerid: values.customerid,
-          name: values.name,
-          phonenumber: values.phonenumber,
-          gender: values.gender,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Customer Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-customer', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            customerid: values.customerid,
+            name: values.name,
+            phonenumber: values.phonenumber,
+            gender: values.gender,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Customer Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {

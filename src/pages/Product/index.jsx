@@ -82,21 +82,34 @@ const Product = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          productid: values.productid,
-          name: values.name,
-          type: values.type,
-          price: values.price,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Product Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-product', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            productid: values.productid,
+            name: values.name,
+            type: values.type,
+            price: values.price,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Product Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
