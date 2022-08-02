@@ -10,10 +10,24 @@ const Supplier = () => {
   const [dataSource, setDataSource] = useState([]);
   const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-supplier', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.supplierid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.supplierid !== record.supplierid);
     });
+
     toast.success(`${record.supplierid} deleted!`);
   };
 

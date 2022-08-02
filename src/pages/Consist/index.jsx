@@ -10,10 +10,24 @@ const Consist = () => {
   const [dataSource, setDataSource] = useState([]);
   const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-consist', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.consistid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.consistid !== record.consistid);
     });
+
     toast.success(`${record.consistid} deleted!`);
   };
 

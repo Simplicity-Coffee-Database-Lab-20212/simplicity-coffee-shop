@@ -20,11 +20,25 @@ const Supply = () => {
   const [dataSource, setDataSource] = useState([]);
   const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-order', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.orderid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.supplyid !== record.supplyid);
     });
-    toast.success(`${record.supplierid} deleted!`);
+
+    toast.success(`${record.supplyid} deleted!`);
   };
 
   const columns = [

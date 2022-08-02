@@ -20,10 +20,24 @@ const Order = () => {
   const [dataSource, setDataSource] = useState([]);
   const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-order', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.orderid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.orderid !== record.orderid);
     });
+
     toast.success(`${record.orderid} deleted!`);
   };
 

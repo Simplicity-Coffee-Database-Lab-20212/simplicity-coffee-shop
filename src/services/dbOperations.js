@@ -8,6 +8,15 @@ const {
   selectAllSupplyQuery,
   selectAllMadeQuery,
   selectAllConsistQuery,
+  deleteSupplierQuery,
+  deleteIngredientQuery,
+  deleteProductQuery,
+  deleteCustomerQuery,
+  deleteEmployeeQuery,
+  deleteConsistQuery,
+  deleteMadeQuery,
+  deleteOrderQuery,
+  deleteSupplyQuery,
 } = require('../../src/constants/query');
 
 const config = require('./dbConfig');
@@ -120,6 +129,114 @@ const selectAllConsist = (res) => {
   });
 };
 
+const deleteSupplier = (res, id) => {
+  config.connect((error) => {
+    if (error) throw error;
+    console.log('Successful!');
+    config.query(`${deleteSupplierQuery} \'${id}\'`, (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    });
+  });
+};
+
+const deleteIngredient = (res, id) => {
+  config.connect((error) => {
+    if (error) throw error;
+    console.log('Successful');
+    config.query(`${deleteIngredientQuery} \'${id}\'`, (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    });
+  });
+};
+
+const deleteProduct = (res, id) => {
+  config.connect((error) => {
+    if (error) throw error;
+    console.log('Successful');
+    config.query(`${deleteProductQuery} \'${id}\'`, (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    });
+  });
+};
+
+const deleteEmployee = (res, id) => {
+  config.connect((error) => {
+    if (error) throw error;
+    console.log('Successful');
+    config.query(`${deleteEmployeeQuery} \'${id}\'`, (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    });
+  });
+};
+
+const deleteCustomer = (res, id) => {
+  config.connect((error) => {
+    if (error) throw error;
+    console.log('Successful');
+    config.query(`${deleteCustomerQuery} \'${id}\'`, (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    });
+  });
+};
+
+const deleteConsist = (res, id) => {
+  config.connect((error) => {
+    if (error) throw error;
+    console.log('Successful');
+    config.query(`${deleteConsistQuery} \'${id}\'`, (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    });
+  });
+};
+
+const deleteMade = (res, id) => {
+  config.connect((error) => {
+    if (error) throw error;
+    console.log('Successful');
+    config.query(`${deleteMadeQuery} \'${id}\'`, (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    });
+  });
+};
+
+const deleteOrder = (res, id) => {
+  config.connect((error) => {
+    if (error) throw error;
+    console.log('Successful');
+    config.query(`${deleteOrderQuery} \'${id}\'`, (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    });
+  });
+};
+
+const deleteSupply = (res, id) => {
+  config.connect((error) => {
+    if (error) throw error;
+    console.log('Successful');
+    config.query(`${deleteSupplyQuery} \'${id}\'`, (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    });
+  });
+};
+
 module.exports = {
   selectAllCustomer,
   selectAllSupplier,
@@ -130,4 +247,13 @@ module.exports = {
   selectAllSupply,
   selectAllMade,
   selectAllConsist,
+  deleteSupplier,
+  deleteIngredient,
+  deleteEmployee,
+  deleteProduct,
+  deleteCustomer,
+  deleteConsist,
+  deleteMade,
+  deleteOrder,
+  deleteSupply,
 };

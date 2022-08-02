@@ -10,10 +10,24 @@ const Made = () => {
   const [dataSource, setDataSource] = useState([]);
   const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-made', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.madeid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.madeid !== record.madeid);
     });
+
     toast.success(`${record.madeid} deleted!`);
   };
 
