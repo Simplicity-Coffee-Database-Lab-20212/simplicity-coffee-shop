@@ -21,14 +21,14 @@ const Supply = () => {
   const [isFetchData, setIsFetchData] = useState(false);
 
   const onDelete = async (record) => {
-    const newData = await fetch('/delete-order', {
+    const newData = await fetch('/delete-supply', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
         Accept: 'application/json',
       },
       body: JSON.stringify({
-        id: record.orderid,
+        id: record.supplyid,
       }),
     }).then((res) => res.json());
 

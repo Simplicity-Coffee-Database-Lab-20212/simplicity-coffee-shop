@@ -17,6 +17,15 @@ const {
   deleteMade,
   deleteOrder,
   deleteSupply,
+  insertCustomer,
+  insertEmployee,
+  insertProduct,
+  insertIngredient,
+  insertSupplier,
+  insertOrder,
+  insertSupply,
+  insertMade,
+  insertConsist,
 } = require('./src/services/dbOperations');
 
 const express = require('express');
@@ -29,6 +38,7 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(cors());
 
+// SELECT
 app.post('/select-all-customers', function (req, res) {
   console.log('Called all customers');
   selectAllCustomer(res, config);
@@ -120,6 +130,53 @@ app.post('/delete-supply', (req, res) => {
   deleteSupply(res, req.body.id, config);
 });
 
+// INSERT
+app.post('/insert-supplier', (req, res) => {
+  console.log(req.body);
+  insertSupplier(res, req.body, config);
+});
+
+app.post('/insert-ingredient', (req, res) => {
+  console.log(req.body);
+  insertIngredient(res, req.body, config);
+});
+
+app.post('/insert-product', (req, res) => {
+  console.log(req.body);
+  insertProduct(res, req.body, config);
+});
+
+app.post('/insert-customer', (req, res) => {
+  console.log(req.body);
+  insertCustomer(res, req.body, config);
+});
+
+app.post('/insert-employee', (req, res) => {
+  console.log(req.body);
+  insertEmployee(res, req.body, config);
+});
+
+app.post('/insert-supply', (req, res) => {
+  console.log(req.body);
+  insertSupply(res, req.body, config);
+});
+
+app.post('/insert-made', (req, res) => {
+  console.log(req.body);
+  insertMade(res, req.body, config);
+});
+
+app.post('/insert-order', (req, res) => {
+  console.log(req.body);
+  insertOrder(res, req.body, config);
+});
+
+app.post('/insert-consist', (req, res) => {
+  console.log(req.body);
+  insertConsist(res, req.body, config);
+});
+
+// CONNECT SQL
 config.connect((error) => {
   if (error) throw error;
   console.log('Successful!');

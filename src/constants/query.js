@@ -18,6 +18,16 @@ const deleteMadeQuery = `DELETE FROM Made WHERE MadeID =`;
 const deleteOrderQuery = `DELETE FROM Ordering WHERE OrderingID =`;
 const deleteSupplyQuery = `DELETE FROM Supply WHERE SupplyID =`;
 
+const insertCustomerQuery = `INSERT INTO Customer VALUES `;
+const insertIngredientQuery = `INSERT INTO Ingredient VALUES `;
+const insertProductQuery = `INSERT INTO Product VALUES `;
+const insertEmployeeQuery = `INSERT INTO Employee VALUES `;
+const insertSupplierQuery = `INSERT INTO Supplier VALUES `;
+const insertConsistQuery = `INSERT INTO Consist VALUES `;
+const insertMadeQuery = `INSERT INTO Made VALUES `;
+const insertOrderQuery = `INSERT INTO Order VALUES `;
+const insertSupplyQuery = `INSERT INTO Supply VALUES `;
+
 module.exports = {
   selectAllCustomerQuery,
   selectAllIngredientQuery,
@@ -37,4 +47,13 @@ module.exports = {
   deleteMadeQuery,
   deleteOrderQuery,
   deleteSupplyQuery,
+  insertCustomerQuery,
+  insertEmployeeQuery,
+  insertProductQuery,
+  insertIngredientQuery,
+  insertSupplierQuery,
+  insertOrderQuery,
+  insertSupplyQuery,
+  insertMadeQuery,
+  insertConsistQuery,
 };
