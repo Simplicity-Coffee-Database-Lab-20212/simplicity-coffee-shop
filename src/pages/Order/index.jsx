@@ -134,6 +134,8 @@ const Order = () => {
       },
     }).then((res) => res.json());
 
+    console.log(newData);
+
     if (newData) {
       setIsFetchData(true);
       newData.map((item) => {

@@ -33,6 +33,8 @@ const Supply = () => {
       }),
     }).then((res) => res.json());
 
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.supplyid !== record.supplyid);
     });
