@@ -28,9 +28,11 @@ const {
   insertConsistQuery,
 } = require('../../src/constants/query');
 
+const { formatNewDate } = require('../utils/formatDateModule');
+
 const config = require('./dbConfig');
 
-const selectAllCustomer = (res, config) => {
+const selectAllCustomer = (res) => {
   config.query(selectAllCustomerQuery, (err, data) => {
     if (err) throw err;
     console.log(data);
@@ -174,23 +176,112 @@ const deleteSupply = (res, id) => {
   });
 };
 
-const insertCustomer = (res, id) => {};
+const insertCustomer = (res, values) => {
+  config.query(
+    `${insertCustomerQuery} ('${values.customerid}', '${values.name}', '${values.phonenumber}', '${values.gender}')`,
+    (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    }
+  );
+};
 
-const insertSupplier = (res, id) => {};
+const insertSupplier = (res, values) => {
+  config.query(
+    `${insertSupplierQuery} ('${values.supplierid}', '${values.name}', '${values.phonenumber}', '${values.address}')`,
+    (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    }
+  );
+};
 
-const insertEmployee = (res, id) => {};
+const insertEmployee = (res, values) => {
+  config.query(
+    `${insertEmployeeQuery} ('${values.employeeid}', '${values.name}', '${values.phonenumber}', '${values.gender}', '${values.position}')`,
+    (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    }
+  );
+};
 
-const insertIngredient = (res, id) => {};
+const insertIngredient = (res, values) => {
+  config.query(
+    `${insertIngredientQuery} ('${values.ingredientid}', '${values.name}', '${
+      values.price
+    }', '${values.quantity}', '${formatNewDate(values.expire)}')`,
+    (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    }
+  );
+};
 
-const insertProduct = (res, id) => {};
+const insertProduct = (res, values) => {
+  config.query(
+    `${insertProductQuery} ('${values.productid}', '${values.name}', '${values.type}', '${values.price}')`,
+    (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    }
+  );
+};
 
-const insertOrder = (res, id) => {};
+const insertOrder = (res, values) => {
+  config.query(
+    `${insertOrderQuery} ('${values.orderid}', '${values.customerid}', '${
+      values.employeeid
+    }', '${formatNewDate(values.date)}', '${values.payment}', '${
+      values.totalprice
+    }')`,
+    (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    }
+  );
+};
 
-const insertMade = (res, id) => {};
+const insertMade = (res, values) => {
+  config.query(
+    `${insertMadeQuery} ('${values.madeid}', '${values.productid}', '${values.ingredientid}', '${values.quantity}')`,
+    (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    }
+  );
+};
 
-const insertConsist = (res, id) => {};
+const insertConsist = (res, values) => {
+  config.query(
+    `${insertConsistQuery} ('${values.consistid}', '${values.orderid}', '${values.productid}', '${values.quantity}')`,
+    (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    }
+  );
+};
 
-const insertSupply = (res, id) => {};
+const insertSupply = (res, values) => {
+  config.query(
+    `${insertSupplyQuery} ('${values.supplyid}', '${values.supplierid}', '${
+      values.ingredientid
+    }', '${formatNewDate(values.date)}', '${values.quantity}')`,
+    (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.send(data);
+    }
+  );
+};
 
 module.exports = {
   selectAllCustomer,

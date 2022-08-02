@@ -1,8 +1,9 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Typography, Button, Modal, Row, Col, Table, Form, Input } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
+import { Helmet } from 'react-helmet';
 
 const { Title } = Typography;
 
@@ -87,22 +88,35 @@ const Employee = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          employeeid: values.employeeid,
-          name: values.name,
-          phonenumber: values.phonenumber,
-          gender: values.gender,
-          position: values.position,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Employee Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-employee', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            employeeid: values.employeeid,
+            name: values.name,
+            phonenumber: values.phonenumber,
+            gender: values.gender,
+            position: values.position,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Employee Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -140,8 +154,15 @@ const Employee = () => {
     }
   };
 
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div>
+      <Helmet>
+        <title>Employee | Simplicity</title>
+      </Helmet>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
           <Title level={3}>Employee</Title>

@@ -10,9 +10,11 @@ import {
   Input,
   DatePicker,
 } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
+import { formatNewDate, formatReceivedSqlDate } from '../../utils/formatDate';
+import { Helmet } from 'react-helmet';
 
 const { Title } = Typography;
 
@@ -97,22 +99,35 @@ const Supply = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          supplyid: values.supplyid,
-          supplierid: values.supplierid,
-          ingredientid: values.ingredientid,
-          date: values.date,
-          quantity: values.quantity,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('New Supply Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-supply', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            supplyid: values.supplyid,
+            supplierid: values.supplierid,
+            ingredientid: values.ingredientid,
+            date: formatNewDate(values.date),
+            quantity: values.quantity,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('New Supply Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -139,7 +154,7 @@ const Supply = () => {
               supplyid: item.SupplyID,
               supplierid: item.SupplierID,
               ingredientid: item.IngredientID,
-              date: item.SupplyDate,
+              date: formatReceivedSqlDate(item.SupplyDate),
               quantity: item.Quantity,
             },
           ];
@@ -148,8 +163,15 @@ const Supply = () => {
     }
   };
 
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div>
+      <Helmet>
+        <title>Supply | Simplicity</title>
+      </Helmet>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
           <Title level={3}>Supply</Title>

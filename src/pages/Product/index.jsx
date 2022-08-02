@@ -1,8 +1,9 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Typography, Button, Modal, Row, Col, Table, Form, Input } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
+import { Helmet } from 'react-helmet';
 
 const { Title } = Typography;
 
@@ -82,21 +83,34 @@ const Product = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          productid: values.productid,
-          name: values.name,
-          type: values.type,
-          price: values.price,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Product Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-product', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            productid: values.productid,
+            name: values.name,
+            type: values.type,
+            price: values.price,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Product Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -131,8 +145,13 @@ const Product = () => {
     }
   };
 
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div>
+      <Helmet>Product | Simplicity</Helmet>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
           <Title level={3}>Product</Title>
