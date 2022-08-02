@@ -1,55 +1,34 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Typography, Button, Modal, Row, Col, Table, Form, Input } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
+import { Helmet } from 'react-helmet';
 
 const { Title } = Typography;
 
 const Customer = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      customerid: 'CUS2013',
-      name: 'Trần Phúc Thành',
-      phonenumber: '0918322965',
-      gender: 'Male',
-    },
-    {
-      customerid: 'CUS2014',
-      name: 'Trần Phúc Thành',
-      phonenumber: '0918322965',
-      gender: 'Male',
-    },
-    {
-      customerid: 'CUS2015',
-      name: 'Trần Phúc Thành',
-      phonenumber: '0918322965',
-      gender: 'Male',
-    },
-    {
-      customerid: 'CUS2016',
-      name: 'Trần Phúc Thành',
-      phonenumber: '0918322965',
-      gender: 'Male',
-    },
-    {
-      customerid: 'CUS2017',
-      name: 'Trần Phúc Thành',
-      phonenumber: '0918322965',
-      gender: 'Male',
-    },
-    {
-      customerid: 'CUS2018',
-      name: 'Trần Phúc Thành',
-      phonenumber: '0918322965',
-      gender: 'Male',
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-customer', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.customerid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.customerid !== record.customerid);
     });
+
     toast.success(`${record.customerid} deleted!`);
   };
 
@@ -104,29 +83,77 @@ const Customer = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          customerid: values.customerid,
-          name: values.name,
-          phonenumber: values.phonenumber,
-          gender: values.gender,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Customer Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-customer', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            customerid: values.customerid,
+            name: values.name,
+            phonenumber: values.phonenumber,
+            gender: values.gender,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Customer Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
 
+  const getData = async () => {
+    setDataSource([]);
+    const newData = await fetch('/select-all-customers', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              customerid: item.CustomerID,
+              name: item.Name,
+              phonenumber: item.PhoneNumber,
+              gender: item.Gender,
+            },
+          ];
+        });
+      });
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div>
+      <Helmet>
+        <title>Customer | Simplicity</title>
+      </Helmet>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
           <Title level={3}>Customer</Title>
@@ -204,6 +231,9 @@ const Customer = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        {isFetchData ? 'Refresh' : 'Get Data'}
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );

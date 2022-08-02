@@ -10,60 +10,34 @@ import {
   Input,
   DatePicker,
 } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
+import { formatNewDate, formatReceivedSqlDate } from '../../utils/formatDate';
+import { Helmet } from 'react-helmet';
 
 const { Title } = Typography;
 
 const Order = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      orderid: 'ORD2013',
-      customerid: 'CUS2019',
-      employeeid: 'EMP2019',
-      date: `${new Date()}`,
-      payment: 'Cash',
-      totalprice: 20,
-    },
-    {
-      orderid: 'ORD2014',
-      customerid: 'CUS2019',
-      employeeid: 'EMP2019',
-      date: `${new Date()}`,
-      payment: 'Cash',
-      totalprice: 20,
-    },
-    {
-      orderid: 'ORD2015',
-      customerid: 'CUS2019',
-      employeeid: 'EMP2019',
-      date: `${new Date()}`,
-      payment: 'Cash',
-      totalprice: 20,
-    },
-    {
-      orderid: 'ORD2015',
-      customerid: 'CUS2019',
-      employeeid: 'EMP2019',
-      date: `${new Date()}`,
-      payment: 'Cash',
-      totalprice: 20,
-    },
-    {
-      orderid: 'ORD2017',
-      customerid: 'CUS2019',
-      employeeid: 'EMP2019',
-      date: `${new Date()}`,
-      payment: 'Cash',
-      totalprice: 20,
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-order', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.orderid,
+      }),
+    }).then((res) => res.json());
+
     setDataSource((pre) => {
       return pre.filter((item) => item.orderid !== record.orderid);
     });
+
     toast.success(`${record.orderid} deleted!`);
   };
 
@@ -128,31 +102,83 @@ const Order = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          orderid: values.orderid,
-          customerid: values.customerid,
-          employeeid: values.employeeid,
-          date: values.date,
-          payment: values.payment,
-          totalprice: values.totalprice,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Order Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-order', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            orderid: values.orderid,
+            customerid: values.customerid,
+            employeeid: values.employeeid,
+            date: formatNewDate(values.date),
+            payment: values.payment,
+            totalprice: values.totalprice,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Order Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
 
+  const getData = async () => {
+    setDataSource([]);
+    const newData = await fetch('/select-all-orders', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    console.log(newData);
+
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              orderid: item.OrderingID,
+              customerid: item.CustomerID,
+              employeeid: item.EmployeeID,
+              date: formatReceivedSqlDate(item.DateOrdered),
+              payment: item.PaymentType,
+              totalprice: item.TotalPrice,
+            },
+          ];
+        });
+      });
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div>
+      <Helmet>
+        <title>Order | Simplicity</title>
+      </Helmet>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
           <Title level={3}>Order</Title>
@@ -256,6 +282,9 @@ const Order = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        {isFetchData ? 'Refresh' : 'Get Data'}
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );

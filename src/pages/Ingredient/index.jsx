@@ -10,63 +10,36 @@ import {
   Input,
   DatePicker,
 } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
-import moment from 'moment';
+import { formatNewDate, formatReceivedSqlDate } from '../../utils/formatDate';
+import { Helmet } from 'react-helmet';
 
 const { Title } = Typography;
 
 const Ingredient = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      ingredientid: 'ING2019',
-      name: 'Pepper',
-      price: 12,
-      quantity: 2,
-      expire: `${moment().format('YYYY-MM-DD')}`,
-    },
-    {
-      ingredientid: 'ING2018',
-      name: 'Pepper',
-      price: 12,
-      quantity: 2,
-      expire: `${moment().format('YYYY-MM-DD')}`,
-    },
-    {
-      ingredientid: 'ING2017',
-      name: 'Pepper',
-      price: 12,
-      quantity: 2,
-      expire: `${moment().format('YYYY-MM-DD')}`,
-    },
-    {
-      ingredientid: 'ING2016',
-      name: 'Pepper',
-      price: 12,
-      quantity: 2,
-      expire: `${moment().format('YYYY-MM-DD')}`,
-    },
-    {
-      ingredientid: 'ING2015',
-      name: 'Pepper',
-      price: 12,
-      quantity: 2,
-      expire: `${moment().format('YYYY-MM-DD')}`,
-    },
-    {
-      ingredientid: 'ING2014',
-      name: 'Pepper',
-      price: 12,
-      quantity: 2,
-      expire: `${new Date()}`,
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-ingredient', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.ingredientid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.ingredientid !== record.ingredientid);
     });
+
     toast.success(`${record.ingredientid} deleted!`);
   };
 
@@ -126,31 +99,80 @@ const Ingredient = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    console.log(values.expire);
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          ingredientid: values.ingredientid,
-          name: values.name,
-          price: values.price,
-          quantity: values.quantity,
-          expire: values.expire.toString(),
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Ingredient Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-ingredient', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            ingredientid: values.ingredientid,
+            name: values.name,
+            price: values.price,
+            quantity: values.quantity,
+            expire: formatNewDate(values.expire),
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Ingredient Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
 
+  const getData = async () => {
+    setDataSource([]);
+    const newData = await fetch('/select-all-ingredients', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    console.log(newData);
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              ingredientid: item.IngredientID,
+              name: item.Name,
+              price: item.Price,
+              quantity: item.QuantityInStock,
+              expire: formatReceivedSqlDate(item.ExpireDate),
+            },
+          ];
+        });
+      });
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div>
+      <Helmet>
+        <title>Ingredient | Simplicity</title>
+      </Helmet>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
           <Title level={3}>Ingredient</Title>
@@ -230,6 +252,9 @@ const Ingredient = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        {isFetchData ? 'Refresh' : 'Get Data'}
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );

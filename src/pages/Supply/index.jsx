@@ -10,56 +10,37 @@ import {
   Input,
   DatePicker,
 } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
+import { formatNewDate, formatReceivedSqlDate } from '../../utils/formatDate';
+import { Helmet } from 'react-helmet';
 
 const { Title } = Typography;
 
 const Supply = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      supplyid: 'BUY1',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-    {
-      supplyid: 'BUY2',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-    {
-      supplyid: 'BUY3',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-    {
-      supplyid: 'BUY4',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-    {
-      supplyid: 'BUY5',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-supply', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.supplyid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.supplyid !== record.supplyid);
     });
-    toast.success(`${record.supplierid} deleted!`);
+
+    toast.success(`${record.supplyid} deleted!`);
   };
 
   const columns = [
@@ -118,30 +99,79 @@ const Supply = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          supplyid: values.supplyid,
-          supplierid: values.supplierid,
-          ingredientid: values.ingredientid,
-          date: values.date,
-          quantity: values.quantity,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('New Supply Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-supply', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            supplyid: values.supplyid,
+            supplierid: values.supplierid,
+            ingredientid: values.ingredientid,
+            date: formatNewDate(values.date),
+            quantity: values.quantity,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('New Supply Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
 
+  const getData = async () => {
+    setDataSource([]);
+    const newData = await fetch('/select-all-supplies', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              supplyid: item.SupplyID,
+              supplierid: item.SupplierID,
+              ingredientid: item.IngredientID,
+              date: formatReceivedSqlDate(item.SupplyDate),
+              quantity: item.Quantity,
+            },
+          ];
+        });
+      });
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div>
+      <Helmet>
+        <title>Supply | Simplicity</title>
+      </Helmet>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
           <Title level={3}>Supply</Title>
@@ -241,6 +271,9 @@ const Supply = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        {isFetchData ? 'Refresh' : 'Get Data'}
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );

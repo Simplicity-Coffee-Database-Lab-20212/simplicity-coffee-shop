@@ -5,6 +5,7 @@ import { Layout, Menu } from 'antd';
 import { navItems } from './constants/navItems';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { routes } from './routes';
+import { Helmet } from 'react-helmet';
 
 const { Content, Footer, Sider } = Layout;
 
@@ -13,6 +14,9 @@ const App = () => {
 
   return (
     <BrowserRouter>
+      <Helmet>
+        <title>Simplicity Coffee Shop | Admin Dashboard</title>
+      </Helmet>
       <Layout className={classes.layout}>
         <Sider
           collapsible
@@ -22,7 +26,7 @@ const App = () => {
           <div className={classes.logo}></div>
           <Menu
             theme="dark"
-            defaultSelectedKeys={['1']}
+            // defaultSelectedKeys={['1']}
             mode="inline"
             items={navItems}
           />
