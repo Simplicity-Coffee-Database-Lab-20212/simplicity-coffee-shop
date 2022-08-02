@@ -1,15 +1,5 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
-import {
-  Typography,
-  Button,
-  Modal,
-  Row,
-  Col,
-  Table,
-  Form,
-  Input,
-  DatePicker,
-} from 'antd';
+import { Typography, Button, Modal, Row, Col, Table, Form, Input } from 'antd';
 import React, { useState } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
@@ -17,49 +7,27 @@ import { ToastContainer, toast } from 'react-toastify';
 const { Title } = Typography;
 
 const Made = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      madeid: 'MAD2',
-      productid: 'PRO2019',
-      ingredientid: 'ING2013',
-      quantity: 12.3,
-    },
-    {
-      madeid: 'MAD211',
-      productid: 'PRO2019',
-      ingredientid: 'ING2013',
-      quantity: 12.3,
-    },
-    {
-      madeid: 'MAD22',
-      productid: 'PRO2019',
-      ingredientid: 'ING2013',
-      quantity: 12.3,
-    },
-    {
-      madeid: 'MAD28',
-      productid: 'PRO2019',
-      ingredientid: 'ING2013',
-      quantity: 12.3,
-    },
-    {
-      madeid: 'MAD29',
-      productid: 'PRO2019',
-      ingredientid: 'ING2013',
-      quantity: 12.3,
-    },
-    {
-      madeid: 'MAD112',
-      productid: 'PRO2019',
-      ingredientid: 'ING2013',
-      quantity: 12.3,
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-made', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.madeid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.madeid !== record.madeid);
     });
+
     toast.success(`${record.madeid} deleted!`);
   };
 
@@ -133,6 +101,34 @@ const Made = () => {
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
+  };
+
+  const getData = async () => {
+    setDataSource([]);
+    const newData = await fetch('/select-all-made', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              madeid: item.MadeID,
+              productid: item.ProductID,
+              ingredientid: item.IngredientID,
+              quantity: item.Quantity,
+            },
+          ];
+        });
+      });
+    }
   };
 
   return (
@@ -232,6 +228,9 @@ const Made = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        {isFetchData ? 'Refresh' : 'Get Data'}
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );

@@ -8,11 +8,26 @@ const { Title } = Typography;
 
 const Product = () => {
   const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-product', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.productid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.productid !== record.productid);
     });
+
     toast.success(`${record.productid} deleted!`);
   };
 
@@ -89,6 +104,7 @@ const Product = () => {
   };
 
   const getData = async () => {
+    setDataSource([]);
     const newData = await fetch('/select-all-products', {
       method: 'POST',
       headers: {
@@ -97,19 +113,22 @@ const Product = () => {
       },
     }).then((res) => res.json());
 
-    newData.map((item) => {
-      setDataSource((prev) => {
-        return [
-          ...prev,
-          {
-            productid: item.ProductID,
-            name: item.Name,
-            type: item.Type,
-            price: item.Price,
-          },
-        ];
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              productid: item.ProductID,
+              name: item.Name,
+              type: item.Type,
+              price: item.Price,
+            },
+          ];
+        });
       });
-    });
+    }
   };
 
   return (
@@ -192,7 +211,7 @@ const Product = () => {
         dataSource={dataSource}
       ></Table>
       <Button onClick={getData} style={{ marginTop: '20px' }}>
-        Get Data
+        {isFetchData ? 'Refresh' : 'Get Data'}
       </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>

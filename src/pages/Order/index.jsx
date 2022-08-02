@@ -18,11 +18,26 @@ const { Title } = Typography;
 
 const Order = () => {
   const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-order', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.orderid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.orderid !== record.orderid);
     });
+
     toast.success(`${record.orderid} deleted!`);
   };
 
@@ -111,6 +126,7 @@ const Order = () => {
   };
 
   const getData = async () => {
+    setDataSource([]);
     const newData = await fetch('/select-all-orders', {
       method: 'POST',
       headers: {
@@ -119,22 +135,24 @@ const Order = () => {
       },
     }).then((res) => res.json());
     console.log(newData);
-
-    newData.map((item) => {
-      setDataSource((prev) => {
-        return [
-          ...prev,
-          {
-            orderid: item.OrderingID,
-            customerid: item.CustomerID,
-            employeeid: item.EmployeeID,
-            date: item.DateOrdered,
-            payment: item.PaymentType,
-            totalprice: item.TotalPrice,
-          },
-        ];
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              orderid: item.OrderingID,
+              customerid: item.CustomerID,
+              employeeid: item.EmployeeID,
+              date: item.DateOrdered,
+              payment: item.PaymentType,
+              totalprice: item.TotalPrice,
+            },
+          ];
+        });
       });
-    });
+    }
   };
 
   return (
@@ -243,7 +261,7 @@ const Order = () => {
         dataSource={dataSource}
       ></Table>
       <Button onClick={getData} style={{ marginTop: '20px' }}>
-        Get Data
+        {isFetchData ? 'Refresh' : 'Get Data'}
       </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>

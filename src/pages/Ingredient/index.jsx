@@ -13,17 +13,27 @@ import {
 import React, { useState } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
-import moment from 'moment';
 
 const { Title } = Typography;
 
 const Ingredient = () => {
   const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
-    setDataSource((pre) => {
-      return pre.filter((item) => item.ingredientid !== record.ingredientid);
-    });
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-ingredient', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.ingredientid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     toast.success(`${record.ingredientid} deleted!`);
   };
 
@@ -107,6 +117,7 @@ const Ingredient = () => {
   };
 
   const getData = async () => {
+    setDataSource([]);
     const newData = await fetch('/select-all-ingredients', {
       method: 'POST',
       headers: {
@@ -116,21 +127,23 @@ const Ingredient = () => {
     }).then((res) => res.json());
 
     console.log(newData);
-
-    newData.map((item) => {
-      setDataSource((prev) => {
-        return [
-          ...prev,
-          {
-            ingredientid: item.IngredientID,
-            name: item.Name,
-            price: item.Price,
-            quantity: item.QuantityInStock,
-            expire: item.ExpireDate,
-          },
-        ];
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              ingredientid: item.IngredientID,
+              name: item.Name,
+              price: item.Price,
+              quantity: item.QuantityInStock,
+              expire: item.ExpireDate,
+            },
+          ];
+        });
       });
-    });
+    }
   };
 
   return (
@@ -215,7 +228,7 @@ const Ingredient = () => {
         dataSource={dataSource}
       ></Table>
       <Button onClick={getData} style={{ marginTop: '20px' }}>
-        Get Data
+        {isFetchData ? 'Refresh' : 'Get Data'}
       </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>

@@ -17,49 +17,28 @@ import { ToastContainer, toast } from 'react-toastify';
 const { Title } = Typography;
 
 const Supply = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      supplyid: 'BUY1',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-    {
-      supplyid: 'BUY2',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-    {
-      supplyid: 'BUY3',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-    {
-      supplyid: 'BUY4',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-    {
-      supplyid: 'BUY5',
-      supplierid: 'SUP2013',
-      ingredientid: 'ING2013',
-      date: `${new Date()}`,
-      quantity: 12.3,
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-order', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.orderid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.supplyid !== record.supplyid);
     });
-    toast.success(`${record.supplierid} deleted!`);
+
+    toast.success(`${record.supplyid} deleted!`);
   };
 
   const columns = [
@@ -138,6 +117,35 @@ const Supply = () => {
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
+  };
+
+  const getData = async () => {
+    setDataSource([]);
+    const newData = await fetch('/select-all-supplies', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              supplyid: item.SupplyID,
+              supplierid: item.SupplierID,
+              ingredientid: item.IngredientID,
+              date: item.SupplyDate,
+              quantity: item.Quantity,
+            },
+          ];
+        });
+      });
+    }
   };
 
   return (
@@ -241,6 +249,9 @@ const Supply = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        {isFetchData ? 'Refresh' : 'Get Data'}
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );

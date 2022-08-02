@@ -22,7 +22,7 @@ const App = () => {
           <div className={classes.logo}></div>
           <Menu
             theme="dark"
-            defaultSelectedKeys={['1']}
+            // defaultSelectedKeys={['1']}
             mode="inline"
             items={navItems}
           />

@@ -8,11 +8,26 @@ const { Title } = Typography;
 
 const Employee = () => {
   const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-employee', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.employeeid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.employeeid !== record.employeeid);
     });
+
     toast.success(`${record.employeeid} deleted!`);
   };
 
@@ -95,6 +110,7 @@ const Employee = () => {
   };
 
   const getData = async () => {
+    setDataSource([]);
     const newData = await fetch('/select-all-employees', {
       method: 'POST',
       headers: {
@@ -105,20 +121,23 @@ const Employee = () => {
 
     console.log(newData);
 
-    newData.map((item) => {
-      setDataSource((prev) => {
-        return [
-          ...prev,
-          {
-            employeeid: item.EmployeeID,
-            name: item.Name,
-            phonenumber: item.PhoneNumber,
-            gender: item.Gender,
-            position: item.Position,
-          },
-        ];
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              employeeid: item.EmployeeID,
+              name: item.Name,
+              phonenumber: item.PhoneNumber,
+              gender: item.Gender,
+              position: item.Position,
+            },
+          ];
+        });
       });
-    });
+    }
   };
 
   return (
@@ -205,7 +224,7 @@ const Employee = () => {
         dataSource={dataSource}
       ></Table>
       <Button onClick={getData} style={{ marginTop: '20px' }}>
-        Get Data
+        {isFetchData ? 'Refresh' : 'Get Data'}
       </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
