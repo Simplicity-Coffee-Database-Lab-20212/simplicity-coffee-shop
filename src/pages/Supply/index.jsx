@@ -14,6 +14,7 @@ import React, { useEffect, useState } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
 import { formatNewDate, formatReceivedSqlDate } from '../../utils/formatDate';
+import { Helmet } from 'react-helmet';
 
 const { Title } = Typography;
 
@@ -168,6 +169,9 @@ const Supply = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>Supply | Simplicity</title>
+      </Helmet>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
           <Title level={3}>Supply</Title>

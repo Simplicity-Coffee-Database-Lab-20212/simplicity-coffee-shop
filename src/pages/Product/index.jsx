@@ -3,6 +3,7 @@ import { Typography, Button, Modal, Row, Col, Table, Form, Input } from 'antd';
 import React, { useState, useEffect } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
+import { Helmet } from 'react-helmet';
 
 const { Title } = Typography;
 
@@ -150,6 +151,7 @@ const Product = () => {
 
   return (
     <div>
+      <Helmet>Product | Simplicity</Helmet>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
           <Title level={3}>Product</Title>
