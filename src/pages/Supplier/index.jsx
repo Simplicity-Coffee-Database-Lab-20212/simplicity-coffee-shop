@@ -1,6 +1,6 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Typography, Button, Modal, Row, Col, Table, Form, Input } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -143,6 +143,10 @@ const Supplier = () => {
       });
     }
   };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <div>

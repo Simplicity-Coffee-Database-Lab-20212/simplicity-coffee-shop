@@ -10,7 +10,7 @@ import {
   Input,
   DatePicker,
 } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
 import { formatNewDate, formatReceivedSqlDate } from '../../utils/formatDate';
@@ -162,6 +162,10 @@ const Ingredient = () => {
       });
     }
   };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <div>
