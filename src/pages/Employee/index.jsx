@@ -1,18 +1,34 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Typography, Button, Modal, Row, Col, Table, Form, Input } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
+import { Helmet } from 'react-helmet';
 
 const { Title } = Typography;
 
 const Employee = () => {
   const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-employee', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.employeeid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.employeeid !== record.employeeid);
     });
+
     toast.success(`${record.employeeid} deleted!`);
   };
 
@@ -72,22 +88,35 @@ const Employee = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          employeeid: values.employeeid,
-          name: values.name,
-          phonenumber: values.phonenumber,
-          gender: values.gender,
-          position: values.position,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Employee Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-employee', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            employeeid: values.employeeid,
+            name: values.name,
+            phonenumber: values.phonenumber,
+            gender: values.gender,
+            position: values.position,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Employee Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -95,6 +124,7 @@ const Employee = () => {
   };
 
   const getData = async () => {
+    setDataSource([]);
     const newData = await fetch('/select-all-employees', {
       method: 'POST',
       headers: {
@@ -105,24 +135,34 @@ const Employee = () => {
 
     console.log(newData);
 
-    newData.map((item) => {
-      setDataSource((prev) => {
-        return [
-          ...prev,
-          {
-            employeeid: item.EmployeeID,
-            name: item.Name,
-            phonenumber: item.PhoneNumber,
-            gender: item.Gender,
-            position: item.Position,
-          },
-        ];
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              employeeid: item.EmployeeID,
+              name: item.Name,
+              phonenumber: item.PhoneNumber,
+              gender: item.Gender,
+              position: item.Position,
+            },
+          ];
+        });
       });
-    });
+    }
   };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <div>
+      <Helmet>
+        <title>Employee | Simplicity</title>
+      </Helmet>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
           <Title level={3}>Employee</Title>
@@ -205,7 +245,7 @@ const Employee = () => {
         dataSource={dataSource}
       ></Table>
       <Button onClick={getData} style={{ marginTop: '20px' }}>
-        Get Data
+        {isFetchData ? 'Refresh' : 'Get Data'}
       </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>

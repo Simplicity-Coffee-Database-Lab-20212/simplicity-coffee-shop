@@ -1,49 +1,34 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Typography, Button, Modal, Row, Col, Table, Form, Input } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
+import { Helmet } from 'react-helmet';
 
 const { Title } = Typography;
 
-const Made = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      consistid: 'CON2',
-      orderid: 'ORD2019',
-      productid: 'PRO2019',
-      quantity: 3,
-    },
-    {
-      consistid: 'CON92',
-      orderid: 'ORD2019',
-      productid: 'PRO2019',
-      quantity: 3,
-    },
-    {
-      consistid: 'CON62',
-      orderid: 'ORD2019',
-      productid: 'PRO2019',
-      quantity: 3,
-    },
-    {
-      consistid: 'CON24',
-      orderid: 'ORD2019',
-      productid: 'PRO2019',
-      quantity: 3,
-    },
-    {
-      consistid: 'CON22',
-      orderid: 'ORD2019',
-      productid: 'PRO2019',
-      quantity: 3,
-    },
-  ]);
+const Consist = () => {
+  const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-consist', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.consistid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.consistid !== record.consistid);
     });
+
     toast.success(`${record.consistid} deleted!`);
   };
 
@@ -98,32 +83,80 @@ const Made = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          consistid: values.consistid,
-          orderid: values.orderid,
-          productid: values.productid,
-          quantity: values.quantity,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('New Order Recipe Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-consist', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            consistid: values.consistid,
+            orderid: values.orderid,
+            productid: values.productid,
+            quantity: values.quantity,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('New Order Recipe Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
 
+  const getData = async () => {
+    setDataSource([]);
+    const newData = await fetch('/select-all-consist', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((res) => res.json());
+
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              consistid: item.ConsistID,
+              orderid: item.OrderingID,
+              productid: item.ProductID,
+              quantity: item.Quantity,
+            },
+          ];
+        });
+      });
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div>
+      <Helmet>
+        <title>Consist | Simplicity</title>
+      </Helmet>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
-          <Title level={3}>Made</Title>
+          <Title level={3}>Consist</Title>
         </Col>
         <Col xs={24} md={8} offset={8} className={classes.add}>
           <Button icon={<PlusOutlined />} onClick={showModal}>
@@ -216,9 +249,12 @@ const Made = () => {
         columns={columns}
         dataSource={dataSource}
       ></Table>
+      <Button onClick={getData} style={{ marginTop: '20px' }}>
+        {isFetchData ? 'Refresh' : 'Get Data'}
+      </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );
 };
 
-export default Made;
+export default Consist;

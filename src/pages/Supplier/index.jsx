@@ -1,18 +1,34 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Typography, Button, Modal, Row, Col, Table, Form, Input } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classes from './styles.module.scss';
 import { ToastContainer, toast } from 'react-toastify';
+import { Helmet } from 'react-helmet';
 
 const { Title } = Typography;
 
 const Supplier = () => {
   const [dataSource, setDataSource] = useState([]);
+  const [isFetchData, setIsFetchData] = useState(false);
 
-  const onDelete = (record) => {
+  const onDelete = async (record) => {
+    const newData = await fetch('/delete-supplier', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        id: record.supplierid,
+      }),
+    }).then((res) => res.json());
+
+    console.log(newData);
+
     setDataSource((pre) => {
       return pre.filter((item) => item.supplierid !== record.supplierid);
     });
+
     toast.success(`${record.supplierid} deleted!`);
   };
 
@@ -67,21 +83,34 @@ const Supplier = () => {
     setIsModalVisible(false);
   };
 
-  const onFinish = (values) => {
-    setDataSource((prev) => {
-      return [
-        ...prev,
-        {
-          supplierid: values.supplierid,
-          name: values.name,
-          phonenumber: values.phonenumber,
-          address: values.address,
-        },
-      ];
-    });
-    form.resetFields();
-    setIsModalVisible(false);
-    toast.success('Supplier Added Successfully!');
+  const onFinish = async (values) => {
+    const newData = await fetch('/insert-supplier', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        values: values,
+      }),
+    }).then((res) => res.json());
+
+    if (newData) {
+      setDataSource((prev) => {
+        return [
+          ...prev,
+          {
+            supplierid: values.supplierid,
+            name: values.name,
+            phonenumber: values.phonenumber,
+            address: values.address,
+          },
+        ];
+      });
+      form.resetFields();
+      setIsModalVisible(false);
+      toast.success('Supplier Added Successfully!');
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -89,6 +118,7 @@ const Supplier = () => {
   };
 
   const getData = async () => {
+    setDataSource([]);
     const newData = await fetch('/select-all-suppliers', {
       method: 'POST',
       headers: {
@@ -97,23 +127,33 @@ const Supplier = () => {
       },
     }).then((res) => res.json());
 
-    newData.map((item) => {
-      setDataSource((prev) => {
-        return [
-          ...prev,
-          {
-            supplierid: item.SupplierID,
-            name: item.Name,
-            phonenumber: item.PhoneNumber,
-            address: item.Address,
-          },
-        ];
+    if (newData) {
+      setIsFetchData(true);
+      newData.map((item) => {
+        setDataSource((prev) => {
+          return [
+            ...prev,
+            {
+              supplierid: item.SupplierID,
+              name: item.Name,
+              phonenumber: item.PhoneNumber,
+              address: item.Address,
+            },
+          ];
+        });
       });
-    });
+    }
   };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <div>
+      <Helmet>
+        <title>Supplier | Simplicity</title>
+      </Helmet>
       <Row className={classes.top}>
         <Col xs={24} md={8}>
           <Title level={3}>Supplier</Title>
@@ -192,7 +232,7 @@ const Supplier = () => {
         dataSource={dataSource}
       ></Table>
       <Button onClick={getData} style={{ marginTop: '20px' }}>
-        Get Data
+        {isFetchData ? 'Refresh' : 'Get Data'}
       </Button>
       <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
