@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Typography, Button, Modal, Row, Col, Table, Form, Input } from 'antd';
 import React, { useEffect, useState } from 'react';
 import classes from './styles.module.scss';
@@ -59,7 +59,6 @@ const Supplier = () => {
       render: (record) => {
         return (
           <>
-            <EditOutlined style={{ cursor: 'pointer' }} />
             <DeleteOutlined
               onClick={() => onDelete(record)}
               style={{ color: 'red', marginLeft: '12px', cursor: 'pointer' }}
