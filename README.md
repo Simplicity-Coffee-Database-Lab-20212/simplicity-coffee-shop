@@ -9,7 +9,7 @@
 | Đinh Ngọc Khuê     | 20194782 |
 | Trần Phúc Thành    | 20194846 |
 
-![alt text](public\team_member.jpg)
+![alt text](./public/team_member.jpg)
 
 ## Overview
 
@@ -24,15 +24,15 @@
 
 Using SERN Stack (SQL ExpressJS ReactJS NodeJS) 
 
-![alt text](public\supplier.jpg)
-![alt text](public\ingredient.jpg)
-![alt text](public\product.jpg)
-![alt text](public\employee.jpg)
-![alt text](public\customer.jpg)
-![alt text](public\order.jpg)
-![alt text](public\supply.jpg)
-![alt text](public\made.jpg)
-![alt text](public\consist.jpg)
+![alt text](./public/supplier.jpg)
+![alt text](./public/ingredient.jpg)
+![alt text](./public/product.jpg)
+![alt text](./public/employee.jpg)
+![alt text](./public/customer.jpg)
+![alt text](./public/order.jpg)
+![alt text](./public/supply.jpg)
+![alt text](./public/made.jpg)
+![alt text](./public/consist.jpg)
 ## Usage
 ### `yarn install`
 
